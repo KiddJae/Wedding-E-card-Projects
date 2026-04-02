@@ -35,9 +35,9 @@ section::-webkit-scrollbar,div::-webkit-scrollbar,textarea::-webkit-scrollbar{di
 }
 
 /* ── DESKTOP opener door backgrounds (≥ 641px) ──────────────────
-   To change: swap the url() values below.
-   Left door  → url('L.png')
-   Right door → url('R.png')
+   To change: swap filenames in ASSETS config (top of <script>).
+   Left door  → assets/L.png
+   Right door → assets/R.png
 ──────────────────────────────────────────────────────────────── */
 .door-l {
   position: absolute;
@@ -49,7 +49,7 @@ section::-webkit-scrollbar,div::-webkit-scrollbar,textarea::-webkit-scrollbar{di
   overflow: hidden;
   transition: transform 1.2s cubic-bezier(0.77, 0, 0.18, 1);
   will-change: transform;
-  background-image: url('L.png');
+  background-image: url('assets/L.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -73,7 +73,7 @@ section::-webkit-scrollbar,div::-webkit-scrollbar,textarea::-webkit-scrollbar{di
   overflow: hidden;
   transition: transform 1.2s cubic-bezier(0.77, 0, 0.18, 1);
   will-change: transform;
-  background-image: url('R.png');
+  background-image: url('assets/R.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -88,17 +88,17 @@ section::-webkit-scrollbar,div::-webkit-scrollbar,textarea::-webkit-scrollbar{di
 }
 
 /* ── MOBILE opener door backgrounds (≤ 640px) ───────────────────
-   To change: swap the url() values below.
-   Left door  → url('L-mobile.png')
-   Right door → url('R-mobile.png')
+   To change: swap filenames in ASSETS config (top of <script>).
+   Left door  → assets/L-mobile.png
+   Right door → assets/R-mobile.png
 ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .door-l {
-    background-image: url('LM.png');
+    background-image: url('assets/L-mobile.png');
     background-position: center;
   }
   .door-r {
-    background-image: url('RM.png');
+    background-image: url('assets/R-mobile.png');
     background-position: center;
   }
 }
@@ -401,7 +401,7 @@ section{position:relative;overflow:hidden;}
   height: 52vw;
   max-height: 520px;
   min-height: 260px;
-  background-image: url(JZ.jpg);
+  background-image: url('assets/JZ.jpg');
   background-size: cover;
   background-position: center 30%;  /* Adjust vertical position: 30% from top */
   background-repeat: no-repeat;
@@ -1402,7 +1402,7 @@ footer{
   <section id="sec-caldate">
     <div class="caldate-container">
 
-      <span class="cal-month-label a">April 2030</span>
+      <span class="cal-month-label a">September 2025</span>
 
       <!-- Calendar card -->
       <div class="cal-card a d1">
@@ -1432,7 +1432,7 @@ footer{
           <span class="cal-cell">10</span>
           <span class="cal-cell">11</span>
           <span class="cal-cell">12</span>
-          <span class="cal-cell">13</span>
+          <span class="cal-cell highlight">13</span>
 
           <span class="cal-cell">14</span>
           <span class="cal-cell">15</span>
@@ -1443,7 +1443,7 @@ footer{
           <span class="cal-cell">20</span>
 
           <span class="cal-cell">21</span>
-          <span class="cal-cell highlight">22</span>
+          <span class="cal-cell">22</span>
           <span class="cal-cell">23</span>
           <span class="cal-cell">24</span>
           <span class="cal-cell">25</span>
@@ -1736,6 +1736,54 @@ footer{
 </div><!-- #main -->
 
 <script>
+/* ═══════════════════════════════════════════════════════════════
+   ASSETS CONFIG — all image filenames live here.
+   Place your files inside the  assets/  folder in your repo.
+   Change filenames below if you rename your images.
+═══════════════════════════════════════════════════════════════ */
+const ASSETS = {
+  /* Opening screen — desktop (shown on screens wider than 640 px) */
+  doorLeftDesktop:  'assets/L.png',
+  doorRightDesktop: 'assets/R.png',
+
+  /* Opening screen — mobile (shown on screens 640 px and narrower) */
+  doorLeftMobile:   'assets/L-mobile.png',
+  doorRightMobile:  'assets/R-mobile.png',
+
+  /* Hero section couple photo */
+  heroCouplePhoto:  'assets/JZ.jpg',
+};
+
+/* ── Asset Loader ───────────────────────────────────────────────
+   Runs immediately and injects the correct image paths into the
+   page so nothing depends on hardcoded filenames in CSS.
+   Detects mobile vs desktop to pick the right door backgrounds.
+──────────────────────────────────────────────────────────────── */
+(function applyAssets() {
+  const isMobile = window.matchMedia('(max-width: 640px)').matches;
+
+  /* Door backgrounds — applied inline so they override CSS */
+  const doorL = document.getElementById('doorL');
+  const doorR = document.getElementById('doorR');
+  if (doorL) doorL.style.backgroundImage = `url('${isMobile ? ASSETS.doorLeftMobile  : ASSETS.doorLeftDesktop}')`;
+  if (doorR) doorR.style.backgroundImage = `url('${isMobile ? ASSETS.doorRightMobile : ASSETS.doorRightDesktop}')`;
+
+  /* Hero couple photo */
+  const heroPhoto = document.querySelector('.hero-photo');
+  if (heroPhoto) heroPhoto.style.backgroundImage = `url('${ASSETS.heroCouplePhoto}')`;
+
+  /* Re-apply on resize so rotating a device swaps the door image */
+  let lastMobile = isMobile;
+  window.addEventListener('resize', () => {
+    const nowMobile = window.matchMedia('(max-width: 640px)').matches;
+    if (nowMobile === lastMobile) return;
+    lastMobile = nowMobile;
+    if (doorL) doorL.style.backgroundImage = `url('${nowMobile ? ASSETS.doorLeftMobile  : ASSETS.doorLeftDesktop}')`;
+    if (doorR) doorR.style.backgroundImage = `url('${nowMobile ? ASSETS.doorRightMobile : ASSETS.doorRightDesktop}')`;
+  });
+})();
+/* ══════════════════════════════════════════════════════════════ */
+
 const WEDDING = new Date('2030-04-22T08:30:00+08:00');
 const WA_NUMBER = '601112345678';
 const EMAIL_ADDR = 'wedding.ikram.masitah@gmail.com';
